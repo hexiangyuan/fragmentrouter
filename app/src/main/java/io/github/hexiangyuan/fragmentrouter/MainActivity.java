@@ -2,6 +2,7 @@ package io.github.hexiangyuan.fragmentrouter;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
                 singleFragment = SingleFragment.newInstance((Integer) Bundle);
                 index++;
                 return singleFragment;
+            }
+
+            @Override
+            public FragmentTransaction customerFragmentTranscation(String screen, Object bundle, boolean isRootFragment) {
+              return getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             }
         };
         router = new FragmentRouter(navigator);

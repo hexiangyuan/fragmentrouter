@@ -32,21 +32,21 @@ public abstract class FragmentNavigator implements INavigator {
     @Override
     public void doAction(Action action) {
         if (action instanceof RootAction) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             String screenName = ((RootAction) action).screenName;
             Object bundle = ((RootAction) action).bundle;
             Fragment fragment = fragmentManager.findFragmentByTag(screenName);
             if (fragment == null) {
                 fragment = instantiateFragment(screenName, bundle, true);
+                FragmentTransaction fragmentTransaction = customerFragmentTranscation(screenName, bundle, true);
                 fragmentTransaction.add(containerResId, fragment, screenName)
                         .addToBackStack(screenName)
                         .commit();
             }
         } else if (action instanceof PushAction) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             String screenName = ((PushAction) action).screenName;
             Object bundle = ((PushAction) action).bundle;
             Fragment fragment = instantiateFragment(screenName, bundle, false);
+            FragmentTransaction fragmentTransaction = customerFragmentTranscation(screenName, bundle, true);
             fragmentTransaction.add(containerResId, fragment)
                     .addToBackStack(screenName)
                     .commit();
@@ -59,9 +59,9 @@ public abstract class FragmentNavigator implements INavigator {
             int backStackEntryCount = fragmentManager.getBackStackEntryCount();
             if (backStackEntryCount > 0) {
                 destroyFragment();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 String screenName = ((ReplaceAction) action).screenName;
                 Object bundle = ((ReplaceAction) action).bundle;
+                FragmentTransaction fragmentTransaction = customerFragmentTranscation(screenName, bundle, true);
                 Fragment fragment = instantiateFragment(screenName, bundle, false);
                 fragmentTransaction.add(containerResId, fragment)
                         .addToBackStack(screenName)
@@ -79,6 +79,10 @@ public abstract class FragmentNavigator implements INavigator {
     }
 
     public abstract Fragment instantiateFragment(String screen, Object Bundle, boolean isRootFragment);
+
+    public FragmentTransaction customerFragmentTranscation(String screen,Object bundle,boolean isRootFragment){
+        return this.fragmentManager.beginTransaction();
+    }
 
     public void destroyFragment() {
         fragmentManager.popBackStack(null, 0);
